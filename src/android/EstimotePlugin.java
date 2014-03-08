@@ -1,6 +1,7 @@
 package org.apache.cordova.estimote;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -27,6 +28,10 @@ import com.estimote.sdk.BeaconManager;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class EstimotePlugin extends CordovaPlugin 
 {	
+
+	private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+	private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
+  
 	private static final String LOG_TAG					= "EstimotePlugin";
 	
 	private static final String ACTION_START_RANGING	= "startRanging";
@@ -81,14 +86,14 @@ public class EstimotePlugin extends CordovaPlugin
 	private void startRanging(JSONArray args, final CallbackContext callbackCtx)
 	{
 		Log.d(LOG_TAG, "startRanging-method called");
-		
+		rangingCallback = callbackCtx;
 		try
 		{
 			BeaconManager beaconManager = new BeaconManager(cordova.getActivity().getBaseContext());
 			beaconManager.setRangingListener(new BeaconManager.RangingListener() {
 				@Override
 				public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
-					Log.d(TAG, "Ranged beacons: " + beacons);
+					Log.d(LOG_TAG, "Ranged beacons: " + beacons);
 					for(Beacon b: beacons) {
 						try {						
 							String name = b.getName();
@@ -100,20 +105,20 @@ public class EstimotePlugin extends CordovaPlugin
 							device.put("proximityUUID", proximityUUID);
 							
 							// Send one device at a time, keeping callback to be used again
-							if(callbackCtx != null) {
+							if(rangingCallback != null) {
 								PluginResult result = new PluginResult(PluginResult.Status.OK, device);
 								result.setKeepCallback(true);
-								callbackCtx.sendPluginResult(result);
+								rangingCallback.sendPluginResult(result);
 							} else {
 								Log.e(LOG_TAG, "CallbackContext for discovery doesn't exist.");
 							}
 						} catch(JSONException e) {
-							if(callbackCtx != null) {
+							if(rangingCallback != null) {
 								EstimotePlugin.this.error(callbackCtx,
 									e.getMessage(),
 									BluetoothError.ERR_UNKNOWN
 								);
-								callbackCtx = null;
+								rangingCallback = null;
 							}
 						}
 					}
@@ -125,8 +130,8 @@ public class EstimotePlugin extends CordovaPlugin
 				public void onServiceReady() {
 					try {
 						beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
-					} catch (RemoteException e) {
-						Log.e(TAG, "Cannot start ranging", e);
+					} catch (Throwable e) {
+						Log.e(LOG_TAG, "Cannot start ranging", e);
 					}
 				}
 			});					

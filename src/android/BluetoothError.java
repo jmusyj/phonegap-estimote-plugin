@@ -1,4 +1,4 @@
-package org.apache.cordova.bluetooth;
+package org.apache.cordova.estimote;
 
 /**
  * Container class for different error codes for Bluetooth.

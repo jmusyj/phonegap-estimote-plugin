@@ -20,6 +20,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.annotation.TargetApi;
 
+import com.estimote.sdk.Region;
+import com.estimote.sdk.Beacon;
+import com.estimote.sdk.BeaconManager;
+
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class EstimotePlugin extends CordovaPlugin 
 {	

@@ -50,5 +50,5 @@ Estimote.prototype.startRanging = function(onDeviceDiscovered, onRangingFinished
     "Estimote", "startRanging", []);
 }
 
-var bluetooth   = new Bluetooth();
-module.exports  = bluetooth;
+var estimote   = new Estimote();
+module.exports  = estimote;

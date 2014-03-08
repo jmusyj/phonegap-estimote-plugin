@@ -25,7 +25,7 @@
 		<config-file target="AndroidManifest.xml" parent="/manifest">
     		<uses-permission android:name="android.permission.BLUETOOTH" />
     		<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-			<service android:name="com.estimote.sdk.service.BeaconService" android:exported="false"/>
+			<service android:name="com.estimote.sdk.service.BeaconService" android:exported="false" />
 		</config-file>	
 		
 		<js-module src="www/estimote.js" name="estimote">

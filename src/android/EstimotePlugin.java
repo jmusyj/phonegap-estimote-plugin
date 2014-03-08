@@ -89,7 +89,7 @@ public class EstimotePlugin extends CordovaPlugin
 		rangingCallback = callbackCtx;
 		try
 		{
-			BeaconManager beaconManager = new BeaconManager(cordova.getActivity().getBaseContext());
+			final BeaconManager beaconManager = new BeaconManager(cordova.getActivity().getBaseContext());
 			beaconManager.setRangingListener(new BeaconManager.RangingListener() {
 				@Override
 				public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {

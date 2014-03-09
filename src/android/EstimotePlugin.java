@@ -114,7 +114,7 @@ public class EstimotePlugin extends CordovaPlugin
 							}
 						} catch(JSONException e) {
 							if(rangingCallback != null) {
-								EstimotePlugin.this.error(callbackCtx,
+								EstimotePlugin.this.error(rangingCallback,
 									e.getMessage(),
 									BluetoothError.ERR_UNKNOWN
 								);
@@ -130,15 +130,19 @@ public class EstimotePlugin extends CordovaPlugin
 				public void onServiceReady() {
 					try {
 						beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
+						PluginResult result = new PluginResult(PluginResult.Status.OK, device);
+						result.setKeepCallback(true);
+						rangingCallback.sendPluginResult(result);
 					} catch (Throwable e) {
 						Log.e(LOG_TAG, "Cannot start ranging", e);
+						this.error(callbackCtx, "Cannot start ranging::" + e.getMessage(), BluetoothError.ERR_UNKNOWN);
 					}
 				}
 			});					
 		}
 		catch(Exception e)
 		{
-			this.error(callbackCtx, e.getMessage(), BluetoothError.ERR_UNKNOWN);
+			this.error(callbackCtx, "Outer exception handler. " + e.getMessage(), BluetoothError.ERR_UNKNOWN);
 		}
 	}
 	

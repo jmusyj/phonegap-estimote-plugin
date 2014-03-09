@@ -130,12 +130,14 @@ public class EstimotePlugin extends CordovaPlugin
 				public void onServiceReady() {
 					try {
 						beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
-						PluginResult result = new PluginResult(PluginResult.Status.OK, device);
+						JSONObject event = new JSONObject();
+						event.put("event", "connected");						
+						PluginResult result = new PluginResult(PluginResult.Status.OK, event);
 						result.setKeepCallback(true);
 						rangingCallback.sendPluginResult(result);
 					} catch (Throwable e) {
 						Log.e(LOG_TAG, "Cannot start ranging", e);
-						this.error(callbackCtx, "Cannot start ranging::" + e.getMessage(), BluetoothError.ERR_UNKNOWN);
+						EstimotePlugin.this.error(callbackCtx, "Cannot start ranging::" + e.getMessage(), BluetoothError.ERR_UNKNOWN);
 					}
 				}
 			});					

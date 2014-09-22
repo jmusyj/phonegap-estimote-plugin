@@ -33,7 +33,8 @@
 		</js-module>
 
 		<source-file src="src/android/EstimotePlugin.java" target-dir="src/org/apache/cordova/estimote" />
-		<source-file src="src/android/BluetoothError.java" target-dir="src/org/apache/cordova/estimote" />		
+		<source-file src="src/android/BluetoothError.java" target-dir="src/org/apache/cordova/estimote" />
+        <source-file src="src/android/estimote-sdk-preview.jar" target-dir="libs" />
 
 	</platform>
 

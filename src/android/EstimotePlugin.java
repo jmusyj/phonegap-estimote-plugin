@@ -99,10 +99,19 @@ public class EstimotePlugin extends CordovaPlugin
 							String name = b.getName();
 							String address = b.getMacAddress();
 							String proximityUUID = b.getProximityUUID();
+							Integer major = b.getMajor(); 
+							Integer minor = b.getMinor();
+							Integer rssi = b.getRssi();
+							Integer measuredPower = b.getMeasuredPower();
+
 							JSONObject device = new JSONObject();
 							device.put("name", name);
 							device.put("address", address);
 							device.put("proximityUUID", proximityUUID);
+							device.put("major", major);
+							device.put("minor", minor);
+							device.put("rssi", rssi);
+							device.put("measuredPower", measuredPower);
 							
 							// Send one device at a time, keeping callback to be used again
 							if(rangingCallback != null) {

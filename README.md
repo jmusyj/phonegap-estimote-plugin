@@ -18,7 +18,29 @@ Remember to build the project afterwards.
 Usage
 -----
 
-The plugin is accessible from `window.estimote`.
+```
+if (window.estimote) {
+  window.estimote.startRanging(
+    // success callback
+    function(result) {
+      console.info(result.name);
+      console.info(result.address);
+      console.info(result.proximityUUID);
+      console.info(result.major);
+      console.info(result.minor);
+      console.info(result.rssi);
+      console.info(result.measuredPower);
+    },
+    // error callback
+    function(result) {
+      console.error(result.message);
+      console.error(result.code);
+    }
+  );
+} else {
+  console.error("No window.estimote defined. Check plugin installation.");
+}
+```
 
 License
 -------

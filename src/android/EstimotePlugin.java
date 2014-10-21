@@ -130,18 +130,19 @@ public class EstimotePlugin extends CordovaPlugin
 							rangingCallback.sendPluginResult(result);
 						} else {
 							Log.e(LOG_TAG, "CallbackContext for discovery doesn't exist.");
-						} catch(JSONException e) {
-							if(rangingCallback != null) {
-								EstimotePlugin.this.error(rangingCallback,
-									e.getMessage(),
-									BluetoothError.ERR_UNKNOWN
-								);
-								rangingCallback = null;
-							}
+						}
+					}
+					catch(JSONException e) {
+						if(rangingCallback != null) {
+							EstimotePlugin.this.error(rangingCallback,
+								e.getMessage(),
+								BluetoothError.ERR_UNKNOWN
+							);
+							rangingCallback = null;
 						}
 					}
 				}
-			});		
+			});
 			
 			beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
 				@Override

@@ -50,5 +50,35 @@ Estimote.prototype.startRanging = function(onDeviceDiscovered, onRangingFinished
     "Estimote", "startRanging", []);
 }
 
+Estimote.prototype.startRangingArray = function(onDeviceDiscovered, onRangingFinished, onError) 
+{
+    var timeout = function()
+    {
+        onError({ code: 9001, message: "Request timed out" });
+    }
+
+    this.timeout = setTimeout(timeout, 15000);
+
+    var self = this;
+    exec(function(result)
+    {
+        if(result === false)
+        {
+            clearTimeout(self.timeout);
+            onRangingFinished();
+        }
+        else
+        {
+            onDeviceDiscovered(result);
+        }
+    }, 
+    function(error)
+    {   
+        clearTimeout(self.timeout);
+        onError(error);
+    }, 
+    "Estimote", "startRangingArray", []);
+}
+
 var estimote   = new Estimote();
 module.exports  = estimote;

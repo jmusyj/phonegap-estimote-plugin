@@ -36,6 +36,8 @@ public class EstimotePlugin extends CordovaPlugin
 	
 	private static final String ACTION_START_RANGING	= "startRanging";
 
+	private static final String ACTION_START_RANGING_ARRAY	= "startRangingArray";
+
 	/**
 	 * Callback context for device ranging actions.
 	 */
@@ -74,6 +76,10 @@ public class EstimotePlugin extends CordovaPlugin
 		{
 			startRanging(args, callbackCtx);
 		}
+		else if(ACTION_START_RANGING_ARRAY.equals(action))
+		{
+			startRangingArray(args, callbackCtx);
+		}
 		else
 		{
 			Log.e(LOG_TAG, "Invalid Action[" + action + "]");
@@ -81,6 +87,84 @@ public class EstimotePlugin extends CordovaPlugin
 		}
 		
 		return true;
+	}
+
+	private void startRangingArray(JSONArray args, final CallbackContext callbackCtx)
+	{
+		Log.d(LOG_TAG, "startRangingArray-method called");
+		rangingCallback = callbackCtx;
+		try
+		{
+			final BeaconManager beaconManager = new BeaconManager(cordova.getActivity().getBaseContext());
+			beaconManager.setRangingListener(new BeaconManager.RangingListener() {
+				@Override
+				public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
+					Log.d(LOG_TAG, "Ranged beacons: " + beacons);
+					JSONArray deviceBeacons = new JSONArray();
+					try {
+						for(Beacon b: beacons) {
+							String name = b.getName();
+							String address = b.getMacAddress();
+							String proximityUUID = b.getProximityUUID();
+							Integer major = b.getMajor(); 
+							Integer minor = b.getMinor();
+							Integer rssi = b.getRssi();
+							Integer measuredPower = b.getMeasuredPower();
+
+							JSONObject device = new JSONObject();
+							device.put("name", name);
+							device.put("address", address);
+							device.put("proximityUUID", proximityUUID);
+							device.put("major", major);
+							device.put("minor", minor);
+							device.put("rssi", rssi);
+							device.put("measuredPower", measuredPower);
+							
+							deviceBeacons.put(device);
+						}
+
+						// Send one all devices and keeping callback to be used again
+						if(rangingCallback != null) {
+							PluginResult result = new PluginResult(PluginResult.Status.OK, deviceBeacons);
+							result.setKeepCallback(true);
+							rangingCallback.sendPluginResult(result);
+						} else {
+							Log.e(LOG_TAG, "CallbackContext for discovery doesn't exist.");
+						}
+					}
+					catch(JSONException e) {
+						if(rangingCallback != null) {
+							EstimotePlugin.this.error(rangingCallback,
+								e.getMessage(),
+								BluetoothError.ERR_UNKNOWN
+							);
+							rangingCallback = null;
+						}
+					}
+				}
+			});
+			
+			beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+				@Override
+				public void onServiceReady() {
+					try {
+						beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
+						JSONObject event = new JSONObject();
+						event.put("event", "connected");						
+						PluginResult result = new PluginResult(PluginResult.Status.OK, event);
+						result.setKeepCallback(true);
+						rangingCallback.sendPluginResult(result);
+					} catch (Throwable e) {
+						Log.e(LOG_TAG, "Cannot start ranging", e);
+						EstimotePlugin.this.error(callbackCtx, "Cannot start ranging::" + e.getMessage(), BluetoothError.ERR_UNKNOWN);
+					}
+				}
+			});					
+		}
+		catch(Exception e)
+		{
+			this.error(callbackCtx, "Outer exception handler. " + e.getMessage(), BluetoothError.ERR_UNKNOWN);
+		}
 	}
 	
 	private void startRanging(JSONArray args, final CallbackContext callbackCtx)
@@ -99,10 +183,19 @@ public class EstimotePlugin extends CordovaPlugin
 							String name = b.getName();
 							String address = b.getMacAddress();
 							String proximityUUID = b.getProximityUUID();
+							Integer major = b.getMajor(); 
+							Integer minor = b.getMinor();
+							Integer rssi = b.getRssi();
+							Integer measuredPower = b.getMeasuredPower();
+
 							JSONObject device = new JSONObject();
 							device.put("name", name);
 							device.put("address", address);
 							device.put("proximityUUID", proximityUUID);
+							device.put("major", major);
+							device.put("minor", minor);
+							device.put("rssi", rssi);
+							device.put("measuredPower", measuredPower);
 							
 							// Send one device at a time, keeping callback to be used again
 							if(rangingCallback != null) {
